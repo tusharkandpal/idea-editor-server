@@ -6,7 +6,6 @@ import initializeDBConnection from "./loadEnvironment";
 import { IRoom } from './models/room.model';
 import User from './models/user.model';
 import { createRoom, persistCodeChanges } from './routes/room.route';
-import cors from 'cors';
 
 dotenv.config();
 initializeDBConnection();
