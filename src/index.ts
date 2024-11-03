@@ -15,7 +15,8 @@ const app: Express = express();
 const httpServer = createServer(app);
 const options = {
     cors: {
-        origin: 'https://idea-editor.vercel.app',
+        origin: ['http://localhost:5173, https://idea-editor.vercel.app'],
+        methods: ["GET", "POST"],
     }
 };
 const io: Server = new Server(httpServer, options);
