@@ -6,17 +6,27 @@ import initializeDBConnection from "./loadEnvironment";
 import { IRoom } from './models/room.model';
 import User from './models/user.model';
 import { createRoom, persistCodeChanges } from './routes/room.route';
+import cors from 'cors';
 
 dotenv.config();
 initializeDBConnection();
 
 const port = process.env.PORT || 3000;
 const app: Express = express();
+const corsOptions = {
+    origin: ["http://localhost:5173", "https://idea-editor.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true,           //access-control-allow-credentials:true
+    optionSuccessStatus: 200
+}
 
+app.use(cors(corsOptions));
 const httpServer = createServer(app);
 const options = {
     cors: {
-        origin: ['http://localhost:5173', 'https://idea-editor.vercel.app'],
+        origin: ["http://localhost:5173", "https://idea-editor.vercel.app"],
+        methods: ["GET", "POST"],
+        credentials: true,
     },
 };
 const io: Server = new Server(httpServer, options);
