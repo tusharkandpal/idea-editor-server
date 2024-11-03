@@ -17,7 +17,9 @@ const options = {
     cors: {
         origin: ['http://localhost:5173, https://idea-editor.vercel.app'],
         methods: ["GET", "POST"],
-    }
+        credentials: true,
+        transports: ['polling']
+    },
 };
 const io: Server = new Server(httpServer, options);
 
