@@ -13,13 +13,11 @@ initializeDBConnection();
 
 const port = process.env.PORT || 3000;
 const app: Express = express();
-app.use(cors());
+
 const httpServer = createServer(app);
 const options = {
     cors: {
-        origin: ['http://localhost:5173, https://idea-editor.vercel.app'],
-        methods: ["GET", "POST"],
-        credentials: true,
+        origin: ['http://localhost:5173', 'https://idea-editor.vercel.app'],
     },
 };
 const io: Server = new Server(httpServer, options);

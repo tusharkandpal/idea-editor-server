@@ -19,18 +19,14 @@ const socket_io_1 = require("socket.io");
 const loadEnvironment_1 = __importDefault(require("./loadEnvironment"));
 const user_model_1 = __importDefault(require("./models/user.model"));
 const room_route_1 = require("./routes/room.route");
-const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 (0, loadEnvironment_1.default)();
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
 const httpServer = (0, http_1.createServer)(app);
 const options = {
     cors: {
-        origin: ['http://localhost:5173, https://idea-editor.vercel.app'],
-        methods: ["GET", "POST"],
-        credentials: true,
+        origin: ['http://localhost:5173', 'https://idea-editor.vercel.app'],
     },
 };
 const io = new socket_io_1.Server(httpServer, options);
