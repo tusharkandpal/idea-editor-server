@@ -28,6 +28,7 @@ const options = {
         methods: ["GET", "POST"],
         credentials: true,
     },
+    allowEIO3: true
 };
 const io: Server = new Server(httpServer, options);
 

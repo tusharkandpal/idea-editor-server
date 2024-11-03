@@ -38,6 +38,7 @@ const options = {
         methods: ["GET", "POST"],
         credentials: true,
     },
+    allowEIO3: true
 };
 const io = new socket_io_1.Server(httpServer, options);
 io.on("connect", (socket) => {
