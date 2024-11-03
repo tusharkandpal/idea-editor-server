@@ -5,8 +5,7 @@ import { Server, ServerOptions, Socket } from 'socket.io';
 import initializeDBConnection from "./loadEnvironment";
 import { IRoom } from './models/room.model';
 import User from './models/user.model';
-import { v4 as uuidv4 } from 'uuid';
-import { createRoom } from './routes/room.route';
+import { createRoom, persistCodeChanges } from './routes/room.route';
 
 dotenv.config();
 initializeDBConnection();
@@ -14,26 +13,33 @@ initializeDBConnection();
 const port = process.env.PORT || 3000;
 const app: Express = express();
 const httpServer = createServer(app);
-const options = { /* ... */ };
+const options = {
+    cors: {
+        origin: 'http://localhost:5173',
+    }
+};
 const io: Server = new Server(httpServer, options);
 
 io.on("connect", (socket: Socket) => {
     console.log(`User Connected !! ${socket.id}`);
 
-    socket.on('create-room', async () => {
-        const roomId = uuidv4();
+    socket.on('create-room', async (roomId) => {
+        console.log(`room : ${roomId} create room enter !!`);
         socket.join(roomId);
-        const roomCreated = await createRoom(roomId) as IRoom;
-        console.log(`User ${socket.id} joined room: ${roomCreated.roomId}`);
-
+        const roomCreatedRes = await createRoom(socket.id, roomId);
+        const roomCreated = roomCreatedRes?.toObject();
+        socket.emit("code-change", roomCreated?.code)
+        // console.log(`User ${socket.id} joined room: ${roomCreated.roomId}`);
     });
 
     // Handle codeChange events
-    socket.on('codeChange', (data) => {
+    socket.on('code-change', (data) => {
         const { roomId, code } = data;
+        console.log(`room : ${roomId} code changes enter !!`);
         // Broadcast code change to other users in the room
-        socket.to(roomId).emit('codeChange', code);
-        console.log(`Code change in room ${roomId}:`, code);
+        persistCodeChanges(roomId, code);
+        socket.to(roomId).emit('code-change', code);
+        console.log(`room : ${roomId} code changes EXIT !!`);
     });
 
     // Handle codeChange events

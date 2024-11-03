@@ -18,29 +18,36 @@ const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const loadEnvironment_1 = __importDefault(require("./loadEnvironment"));
 const user_model_1 = __importDefault(require("./models/user.model"));
-const uuid_1 = require("uuid");
 const room_route_1 = require("./routes/room.route");
 dotenv_1.default.config();
 (0, loadEnvironment_1.default)();
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
-const options = { /* ... */};
+const options = {
+    cors: {
+        origin: 'http://localhost:5173',
+    }
+};
 const io = new socket_io_1.Server(httpServer, options);
 io.on("connect", (socket) => {
     console.log(`User Connected !! ${socket.id}`);
-    socket.on('create-room', () => __awaiter(void 0, void 0, void 0, function* () {
-        const roomId = (0, uuid_1.v4)();
+    socket.on('create-room', (roomId) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(`room : ${roomId} create room enter !!`);
         socket.join(roomId);
-        const roomCreated = yield (0, room_route_1.createRoom)(roomId);
-        console.log(`User ${socket.id} joined room: ${roomCreated.roomId}`);
+        const roomCreatedRes = yield (0, room_route_1.createRoom)(socket.id, roomId);
+        const roomCreated = roomCreatedRes === null || roomCreatedRes === void 0 ? void 0 : roomCreatedRes.toObject();
+        socket.emit("code-change", roomCreated === null || roomCreated === void 0 ? void 0 : roomCreated.code);
+        // console.log(`User ${socket.id} joined room: ${roomCreated.roomId}`);
     }));
     // Handle codeChange events
-    socket.on('codeChange', (data) => {
+    socket.on('code-change', (data) => {
         const { roomId, code } = data;
+        console.log(`room : ${roomId} code changes enter !!`);
         // Broadcast code change to other users in the room
-        socket.to(roomId).emit('codeChange', code);
-        console.log(`Code change in room ${roomId}:`, code);
+        (0, room_route_1.persistCodeChanges)(roomId, code);
+        socket.to(roomId).emit('code-change', code);
+        console.log(`room : ${roomId} code changes EXIT !!`);
     });
     // Handle codeChange events
     socket.on('event', () => {

@@ -7,7 +7,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const { Schema } = mongoose_1.default;
 const roomSchema = new Schema({
     roomId: String,
-    members: []
-}, { versionKey: false, id: false });
+    members: [String],
+    code: String
+}, { versionKey: false });
 const Room = mongoose_1.default.model('Room', roomSchema);
 exports.default = Room;
